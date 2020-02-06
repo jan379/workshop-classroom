@@ -3,6 +3,8 @@ heat_template_version: 2016-04-08
 parameters:
   name:
     type: string
+  domainname:
+    type: string
   innovo_net:
     type: string
   image: 
@@ -12,6 +14,8 @@ parameters:
   ssh_keys:
     type: comma_delimited_list
   public_network:
+    type: string
+  dns_zone_id:
     type: string
 
 resources:
@@ -52,7 +56,7 @@ resources:
             shell: /bin/bash
             ssh-authorized-keys: { get_param: ssh_keys }
        runcmd:
-         - [ /root/install_kubeadm.sh ]
+         - [ /root/install_kubeadm.sh, {get_param: name}, {get_param: domainname} ]
        write_files:
          -  content: { get_file: scripts/install_kubeadm.sh }
             permissions: 0700
@@ -73,6 +77,18 @@ resources:
       floating_network: { get_param: public_network }
       port_id: { get_resource: server_port }
       
+  dns_arecord:
+    type: OS::Designate::RecordSet
+    properties:
+      description: classroom server record
+      name: { get_param: name }
+      records: 
+        - { get_attr: [public_ip, floating_ip_address] } 
+      ttl: 300
+      type: A
+      zone: {get_param: dns_zone_id} 
+    
+
 outputs:
   instance_ip:
     description: IP address of the deployed compute instance

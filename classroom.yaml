@@ -1,4 +1,4 @@
-heat_template_version: 2016-04-08
+heat_template_version: pike 
 #
 # You can deploy this template using the following command:
 # 'openstack stack create -t clustersetup.yaml -e clustersetup-env.yaml <stack_name>'
@@ -12,7 +12,7 @@ description: A template to deploy and configure a loadbalanced server setup.
 parameters:
   number_student: 
     type: string
-    default: 5
+    default: 1
   public_network:
     type: string
     default: provider
@@ -28,8 +28,10 @@ parameters:
     default: Ubuntu 18.04 Bionic Beaver - Latest
   ssh_keys:
     type: comma_delimited_list
-    default: 
-      - 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC161Lj6uDtuIwRjQKH9/LuR4FRNwCYTife+BuoDIuxioKfdPvHhRHL7GuAj+Qa7uG+83dfKek1Q6Gbjl82d254LPH720U7u1BG8uIFoFWM/ZE/+6kmykdf1LRPQUPa9K/xVoFI1gOJZgSm7EahcmBQeAWk+Zvge/Ttrbtln1kBTiUE/vKms4wF6TAapmFOXIToIlhsI7Wy/WO5uaL/ew7jq7ZVbJPu7l4w3lIt/Hb6zrwpIzPRxdMkDq5qm6ftwEZ1Wqml+TXBYRM69G8tpAaJt4GA7yzCbCJ/vfL4CDLpAhQ5AVBDAcVYCJZfZHayYoQW75+VfYYuyzLHb2GEvMgr jpeschke@Jans-MacBook-Pro.local'
+  dns_zone_id:
+    type: string
+  domainname:
+    type: string
 
 resources:
 
@@ -80,5 +82,7 @@ resources:
           innovo_net: { get_resource: innovo_net }
           ssh_keys: { get_param: ssh_keys }
           public_network: { get_param: public_network }
+          dns_zone_id: { get_param: dns_zone_id }
+          domainname: { get_param: domainname }
 
 
