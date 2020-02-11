@@ -8,7 +8,10 @@ name="$1"
 domainname="$2"
 mydnsname="${name}.${domainname}"
 
+# install shellinabox, reverse proxy and tooling
 apt-get update && apt-get install  -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  apt-transport-https curl git jq shellinabox nginx certbot python-certbot-nginx
+
+# install kubectl
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
@@ -16,6 +19,10 @@ EOF
 apt-get update
 apt-get install  -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  kubectl
 
+# install helm
+wget https://get.helm.sh/helm-v3.0.3-linux-amd64.tar.gz
+tar -xzvf helm-v3.0.3-linux-amd64.tar.gz
+mv linux-amd64/helm /usr/local/bin/
 
 # configure shellinabox
 cat <<EOF> /etc/default/shellinabox
@@ -112,3 +119,6 @@ systemctl restart nginx.service
 # build usable user environment
 kubectl completion bash > /home/innovo/.kubectlcompletion
 echo '. /home/innovo/.kubectlcompletion' >> /home/innovo/.bashrc
+chown -R innovo: /home/innovo
+
+
